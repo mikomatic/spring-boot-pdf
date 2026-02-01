@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de Séquençage</title>
+    <script  src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .report-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20mm;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            max-width: 100%;
+            height: 350px;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .quality-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .quality-table th,
+        .quality-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .quality-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .quality-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        /* Support multi-pages pour impression PDF */
+        @media print {
+            body {
+                background-color: white;
+            }
+
+            .report-container {
+                max-width: 100%;
+                padding: 15mm;
+                box-shadow: none;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .chart-wrapper {
+                page-break-inside: avoid;
+                height: 300px;
+            }
+
+            .quality-table {
+                page-break-inside: auto;
+            }
+
+            .quality-table tr {
+                page-break-inside: avoid;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="header">
+            <h1>Rapport de Séquençage Génomique</h1>
+            <p style="color: #666;">Analyse de Qualité et Statistiques</p>
+        </div>
+
+        <div class="report-info">
+            <div class="info-item">
+                <span class="info-label">ID Échantillon:</span>
+                <span class="info-value">SAMPLE-2024-001</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date d'analyse:</span>
+                <span class="info-value">15 Janvier 2024</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Type:</span>
+                <span class="info-value">Whole Genome Sequencing</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Plateforme:</span>
+                <span class="info-value">Illumina NovaSeq 6000</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Métriques Principales</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">45.2M</div>
+                    <div class="metric-label">Reads Totaux</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">98.5%</div>
+                    <div class="metric-label">Qualité Q30</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">30.4x</div>
+                    <div class="metric-label">Couverture Moyenne</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">99.1%</div>
+                    <div class="metric-label">Reads Mappés</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Distribution des Scores de Qualité</h2>
+            <div id="qualityChart" class="chart-wrapper"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Couverture par Chromosome</h2>
+            <div id="coverageChart" class="chart-wrapper"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Contrôle Qualité</h2>
+            <table class="quality-table">
+                <thead>
+                    <tr>
+                        <th>Métrique</th>
+                        <th>Valeur</th>
+                        <th>Seuil</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GC Content (%)</td>
+                        <td>42.3</td>
+                        <td>40-45</td>
+                        <td><span class="status-badge status-pass">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Duplication Rate (%)</td>
+                        <td>8.2</td>
+                        <td>&lt; 20</td>
+                        <td><span class="status-badge status-pass">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Adapter Content (%)</td>
+                        <td>0.3</td>
+                        <td>&lt; 5</td>
+                        <td><span class="status-badge status-pass">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mean Insert Size (bp)</td>
+                        <td>385</td>
+                        <td>300-500</td>
+                        <td><span class="status-badge status-pass">PASS</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Graphique de distribution des scores de qualité
+        var qualityChartDom = document.getElementById('qualityChart');
+        var qualityChart = echarts.init(qualityChartDom);
+
+        var qualityOption = {
+            title: {
+                text: 'Distribution des Scores de Qualité Phred',
+                left: 'center',
+                textStyle: { fontSize: 14 }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            grid: {
+                left: '10%',
+                right: '5%',
+                bottom: '15%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Q10', 'Q15', 'Q20', 'Q25', 'Q30', 'Q35', 'Q40'],
+                name: 'Score de Qualité',
+                axisLabel: { fontSize: 11 }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Pourcentage (%)',
+                max: 100,
+                axisLabel: { fontSize: 11 }
+            },
+            series: [{
+                name: 'Pourcentage',
+                type: 'bar',
+                data: [99.8, 99.5, 99.2, 98.9, 98.5, 96.2, 92.1],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#3498db' },
+                        { offset: 1, color: '#2980b9' }
+                    ])
+                }
+            }]
+        };
+
+        qualityChart.setOption(qualityOption);
+
+        // Graphique de couverture par chromosome
+        var coverageChartDom = document.getElementById('coverageChart');
+        var coverageChart = echarts.init(coverageChartDom);
+
+        var coverageOption = {
+            title: {
+                text: 'Couverture Moyenne par Chromosome',
+                left: 'center',
+                textStyle: { fontSize: 14 }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'line' }
+            },
+            grid: {
+                left: '8%',
+                right: '5%',
+                bottom: '20%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
+                       'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19',
+                       'chr20', 'chr21', 'chr22', 'chrX', 'chrY'],
+                axisLabel: {
+                    rotate: 45,
+                    fontSize: 10
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Couverture (x)',
+                axisLabel: { fontSize: 11 }
+            },
+            series: [{
+                name: 'Couverture',
+                type: 'line',
+                data: [31.2, 30.8, 29.5, 30.1, 28.9, 29.7, 30.5, 29.2, 30.8, 31.1,
+                       29.8, 30.3, 28.5, 29.1, 30.7, 31.5, 32.1, 29.9, 31.8, 30.2,
+                       28.7, 29.4, 27.3, 15.2],
+                smooth: true,
+                itemStyle: { color: '#e74c3c' },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(231, 76, 60, 0.3)' },
+                        { offset: 1, color: 'rgba(231, 76, 60, 0.05)' }
+                    ])
+                }
+            }]
+        };
+
+        coverageChart.setOption(coverageOption);
+
+        // Rendre les graphiques responsive
+        window.addEventListener('resize', function() {
+            qualityChart.resize();
+            coverageChart.resize();
+        });
+
+        // S'assurer que les graphiques sont correctement dimensionnés au chargement
+        setTimeout(function() {
+            qualityChart.resize();
+            coverageChart.resize();
+        }, 100);
+    </script>
+</body>
+</html>
