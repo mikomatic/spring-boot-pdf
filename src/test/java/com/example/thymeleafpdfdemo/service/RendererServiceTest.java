@@ -1,7 +1,5 @@
 package com.example.thymeleafpdfdemo.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +18,7 @@ public class RendererServiceTest {
   @Test
   void testRenderFullTemplateToTargetFolder() throws IOException {
     // Appel de la méthode à tester
-    String content = rendererService.parseThymeleafTemplate("full");
+    String content = rendererService.parseThymeleafTemplate("demo");
 
     String filename = "test-playwright-" + UUID.randomUUID() + ".html";
 

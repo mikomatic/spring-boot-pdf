@@ -1,68 +1,117 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Rapport de Séquençage</title>
     <style type="text/css">
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #2a4d69; }
-        .section { margin-bottom: 25px; }
-        .info-table, .variants-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .info-table td { padding: 4px 8px; }
-        .variants-table th, .variants-table td { border: 1px solid #bbb; padding: 6px 10px; text-align: left; }
-        .variants-table th { background: #e3eaf2; }
-        .summary, .conclusion { background: #f7f9fa; padding: 12px; border-radius: 6px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2a4d69;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .info-table, .variants-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .info-table td {
+            padding: 4px 8px;
+        }
+
+        .variants-table th, .variants-table td {
+            border: 1px solid #bbb;
+            padding: 6px 10px;
+            text-align: left;
+        }
+
+        .variants-table th {
+            background: #e3eaf2;
+        }
+
+        .summary, .conclusion {
+            background: #f7f9fa;
+            padding: 12px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Rapport de Séquençage Génétique</h1>
-        <div>Date du rapport : <span th:text="${reportDate}">31/01/2026</span></div>
-    </div>
+<div class="header">
+    <h1>Rapport de Séquençage Génétique</h1>
+    <div>Date du rapport : <span th:text="${reportDate}">31/01/2026</span></div>
+</div>
 
-    <div class="section">
-        <h2>Informations Patient</h2>
-        <table class="info-table">
-            <tr><td><b>Nom :</b></td><td th:text="${patientName}">Jean Dupont</td></tr>
-            <tr><td><b>ID Patient :</b></td><td th:text="${patientId}">123456</td></tr>
-            <tr><td><b>Date de naissance :</b></td><td th:text="${dob}">01/01/1980</td></tr>
-            <tr><td><b>Médecin référent :</b></td><td th:text="${physician}">Dr. Martin</td></tr>
-        </table>
-    </div>
+<div class="section">
+    <h2>Informations Patient</h2>
+    <table class="info-table">
+        <tr>
+            <td><b>Nom :</b></td>
+            <td th:text="${patientName}">Jean Dupont</td>
+        </tr>
+        <tr>
+            <td><b>ID Patient :</b></td>
+            <td th:text="${patientId}">123456</td>
+        </tr>
+        <tr>
+            <td><b>Date de naissance :</b></td>
+            <td th:text="${dob}">01/01/1980</td>
+        </tr>
+        <tr>
+            <td><b>Médecin référent :</b></td>
+            <td th:text="${physician}">Dr. Martin</td>
+        </tr>
+    </table>
+</div>
 
-    <div class="section summary">
-        <h2>Résumé</h2>
-        <p th:text="${summary}">Ce rapport présente les résultats de l'analyse de séquençage génétique réalisée sur l'échantillon du patient. Plusieurs variants ont été identifiés et sont détaillés ci-dessous.</p>
-    </div>
+<div class="section summary">
+    <h2>Résumé</h2>
+    <p th:text="${summary}">Ce rapport présente les résultats de l'analyse de séquençage génétique réalisée sur
+        l'échantillon du patient. Plusieurs variants ont été identifiés et sont détaillés ci-dessous.</p>
+</div>
 
-    <div class="section">
-        <h2>Variants Détectés</h2>
-        <table class="variants-table">
-            <thead>
-                <tr>
-                    <th>Gène</th>
-                    <th>Variant</th>
-                    <th>Conséquence</th>
-                    <th>Zygosité</th>
-                    <th>Pathogénicité</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="variant : ${variants}">
-                    <td th:text="${variant.gene}">BRCA1</td>
-                    <td th:text="${variant.description}">c.68_69delAG</td>
-                    <td th:text="${variant.consequence}">Perte de fonction</td>
-                    <td th:text="${variant.zygosity}">Hétérozygote</td>
-                    <td th:text="${variant.pathogenicity}">Pathogène</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="section">
+    <h2>Variants Détectés</h2>
+    <table class="variants-table">
+        <thead>
+        <tr>
+            <th>Gène</th>
+            <th>Variant</th>
+            <th>Conséquence</th>
+            <th>Zygosité</th>
+            <th>Pathogénicité</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="variant : ${variants}">
+            <td th:text="${variant.gene}">BRCA1</td>
+            <td th:text="${variant.description}">c.68_69delAG</td>
+            <td th:text="${variant.consequence}">Perte de fonction</td>
+            <td th:text="${variant.zygosity}">Hétérozygote</td>
+            <td th:text="${variant.pathogenicity}">Pathogène</td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:remove="tag" th:utext="${svg}"></div>
+</div>
 
-    <div class="section conclusion">
-        <h2>Conclusion</h2>
-        <p th:text="${conclusion}">Les variants identifiés nécessitent une interprétation clinique complémentaire. Merci de contacter le laboratoire pour toute question.</p>
-    </div>
+<div class="section conclusion">
+    <h2>Conclusion</h2>
+    <p th:text="${conclusion}">Les variants identifiés nécessitent une interprétation clinique complémentaire. Merci de
+        contacter le laboratoire pour toute question.</p>
+</div>
 </body>
 </html>
