@@ -2,7 +2,8 @@ package com.example.thymeleafpdfdemo.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -24,7 +25,7 @@ public class DefaultPDFGenerator implements PDFGenerator {
   }
 
   @Override
-  public void generatePdfAsync(String html, Path outputPath) {
+  public CompletableFuture<byte[]> generatePdfAsync(String html) {
     throw new UnsupportedOperationException();
   }
 }

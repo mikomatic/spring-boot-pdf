@@ -1,16 +1,20 @@
 package com.example.thymeleafpdfdemo.pdf;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.thymeleafpdfdemo.config.AsyncConfig;
 import com.example.thymeleafpdfdemo.service.RendererService;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +22,14 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest
 @Import(AsyncConfig.class)
+@Slf4j
 public class PlaywrightPDFGeneratorTest {
 
   @Autowired private PlaywrightPDFGenerator pdfGenerator;
 
   @Autowired private RendererService rendererService;
+
+  @Autowired private Executor taskExecutor; // Inject your custom executor
 
   @Test
   void testRenderMultiplePDFsPerformance() throws Exception {
@@ -47,18 +54,42 @@ public class PlaywrightPDFGeneratorTest {
   }
 
   @Test
-  void testRenderMultiplePDFsPerformanceAsync() throws Exception {
-    int count = 10;
+  void testRenderMultiplePDFsPerformanceAsync() {
+    int count = 50;
     String htmlContent = rendererService.parseThymeleafTemplate("full");
     long start = System.currentTimeMillis();
-    Path outputPath = null;
+
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
+
     for (int i = 0; i < count; i++) {
       String filename = "test-playwright-" + i + "-" + UUID.randomUUID() + ".pdf";
-      outputPath = new File("target", filename).toPath();
-      pdfGenerator.generatePdfAsync(htmlContent, outputPath);
+      Path outputPath = new File("target", filename).toPath();
+
+      CompletableFuture<Void> future =
+          pdfGenerator
+              .generatePdfAsync(htmlContent)
+              .thenAcceptAsync(
+                  pdf -> {
+                    try {
+                      Files.write(
+                          outputPath,
+                          pdf,
+                          StandardOpenOption.CREATE,
+                          StandardOpenOption.TRUNCATE_EXISTING);
+                      System.out.println(
+                          "async PDF generation completed at: " + outputPath.toAbsolutePath());
+                    } catch (IOException e) {
+                      throw new RuntimeException(e);
+                    }
+                  },
+                  taskExecutor); // Specify the executor
+
+      futures.add(future);
     }
-    Path finalOutputPath = outputPath;
-    await().atMost(2, TimeUnit.MINUTES).until(() -> finalOutputPath.toFile().exists());
+
+    // Wait for all futures to complete
+    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
     long end = System.currentTimeMillis();
     long total = end - start;
     System.out.println("Temps total pour générer " + count + " PDF : " + total + " ms");
