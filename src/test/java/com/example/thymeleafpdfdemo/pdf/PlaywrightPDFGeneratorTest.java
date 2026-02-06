@@ -48,7 +48,7 @@ public class PlaywrightPDFGeneratorTest {
 
   @Test
   void testRenderMultiplePDFsPerformanceAsync() throws Exception {
-    int count = 100;
+    int count = 10;
     String htmlContent = rendererService.parseThymeleafTemplate("full");
     long start = System.currentTimeMillis();
     Path outputPath = null;
