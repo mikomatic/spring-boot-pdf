@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.thymeleaf.context.Context;
 
 @SpringBootTest
 @Import(AsyncConfig.class)
@@ -25,7 +26,7 @@ class DefaultPDFGeneratorTest {
   @Test
   void testRenderMultiplePDFsPerformance() throws Exception {
     int count = 100;
-    String htmlContent = rendererService.parseThymeleafTemplate("demo");
+    String htmlContent = rendererService.parseThymeleafTemplate("demo", new Context());
     long start = System.currentTimeMillis();
     for (int i = 0; i < count; i++) {
       byte[] pdf = pdfGenerator.generatePdf(htmlContent);

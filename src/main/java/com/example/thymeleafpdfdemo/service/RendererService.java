@@ -22,22 +22,22 @@ public class RendererService {
   private final TemplateEngine templateEngine;
   private final ChartService chartService;
 
-  public String parseThymeleafTemplate(String template) {
+  public String parseThymeleafTemplate(String template, Context context) {
 
-    Context context = new Context();
+    // temporary dummy data to pass to the context, replace with actual data as needed
     context.setVariable("to", "Baeldung");
     String svgChart = chartService.generateReadLengthChartSvg(List.of(), true);
     String imgTag = convertSvgToPngDataUrl(svgChart);
-
     context.setVariable("svg", imgTag);
+    //
 
     return templateEngine.process(template, context);
   }
 
-
   private String convertSvgToPngDataUrl(String svg) {
-    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8));
-         ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+    try (ByteArrayInputStream inputStream =
+            new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
       PNGTranscoder transcoder = new PNGTranscoder();
       TranscoderInput input = new TranscoderInput(inputStream);

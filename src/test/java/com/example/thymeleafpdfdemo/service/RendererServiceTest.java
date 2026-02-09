@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.thymeleaf.context.Context;
 
 @SpringBootTest
 public class RendererServiceTest {
@@ -18,7 +19,7 @@ public class RendererServiceTest {
   @Test
   void testRenderFullTemplateToTargetFolder() throws IOException {
     // Appel de la méthode à tester
-    String content = rendererService.parseThymeleafTemplate("demo");
+    String content = rendererService.parseThymeleafTemplate("demo", new Context());
 
     String filename = "test-playwright-" + UUID.randomUUID() + ".html";
 

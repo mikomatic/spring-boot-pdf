@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.thymeleaf.context.Context;
 
 @SpringBootTest
 @Import(AsyncConfig.class)
@@ -34,7 +35,7 @@ public class PlaywrightPDFGeneratorTest {
   @Test
   void testRenderMultiplePDFsPerformance() throws Exception {
     int count = 10;
-    String htmlContent = rendererService.parseThymeleafTemplate("full");
+    String htmlContent = rendererService.parseThymeleafTemplate("full", new Context());
     long start = System.currentTimeMillis();
     for (int i = 0; i < count; i++) {
       byte[] pdf = pdfGenerator.generatePdf(htmlContent);
@@ -56,7 +57,7 @@ public class PlaywrightPDFGeneratorTest {
   @Test
   void testRenderMultiplePDFsPerformanceAsync() {
     int count = 50;
-    String htmlContent = rendererService.parseThymeleafTemplate("full");
+    String htmlContent = rendererService.parseThymeleafTemplate("full", new Context());
     long start = System.currentTimeMillis();
 
     List<CompletableFuture<Void>> futures = new ArrayList<>();
